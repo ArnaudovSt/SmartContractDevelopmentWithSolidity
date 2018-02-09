@@ -54,8 +54,8 @@ contract TimeLocked is Owned {
 
     modifier timeLock() {
         require((lastInvocation + period) < now);
-        _;
         lastInvocation = now;
+        _;
     }
 
     function setPeriod(uint256 _period) public onlyOwner {
