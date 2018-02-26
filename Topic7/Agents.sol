@@ -16,7 +16,7 @@ contract Agent {
         master = _master;
     }
 
-    function processOrder() public onlyMaster {
+    function processOrder() external onlyMaster {
         require(lastOrderTime + 15 < now);
         lastOrderTime = now;
     }
@@ -27,13 +27,13 @@ contract Agent {
 }
 
 interface IAgent {
-    function processOrder() public;
+    function processOrder() external;
 
     function isOrderComplete() public view returns (bool);
 }
 
 contract Master is Owned {
-    mapping (address=>bool) approvedAgents;
+    mapping (address=>bool) public approvedAgents;
 
     function issueOrder(address _agent) public onlyOwner {
         require(approvedAgents[_agent]);
