@@ -23,14 +23,14 @@ library MemberOperations {
 	function addMember(Data storage _self, address _newMember) internal {
 		/* solium-disable-next-line security/no-block-members */
 		_self.members[_newMember] = MemberDetails(0, now, 0);
-		_self.totalMembers++;
+		_self.totalMembers = _self.totalMembers.add(1);
 		/* solium-disable-next-line security/no-block-members */
 		LogNewMember(_newMember, now);
 	}
 
 	function removeMember(Data storage _self, address _memberToRemove) internal {
 		delete _self.members[_memberToRemove];
-		_self.totalMembers--;
+		_self.totalMembers = _self.totalMembers.sub(1);
 	}
 
 	function addDonation(Data storage _self, address _member, uint256 _donationAmount) internal {
@@ -51,6 +51,6 @@ library MemberOperations {
 
 	function hasDonatedInTheLastHour(Data storage _self, address _memberToCheck) internal view returns (bool) {
 		/* solium-disable-next-line security/no-block-members */
-		return (_self.members[_memberToCheck].lastDonationTime + 1 hours) >= now;
+		return (_self.members[_memberToCheck].lastDonationTime.add(1 hours)) >= now;
 	}
 }
