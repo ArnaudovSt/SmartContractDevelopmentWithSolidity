@@ -13,18 +13,15 @@ function addNewMembers() {
 	const membersToAdd = queryNewMembers();
 
 	membersToAdd.forEach((m) => {
-		console.log(`Member to add ${m}`);
 		addMember(m);
 	});
 }
 
 function removeInactiveMembers() {
 	if (!hasOngoingVotings()) {
-		console.log("removeInactiveMembers");
 		const membersToRemove = queryInactiveMembers();
-
+		
 		membersToRemove.forEach((el) => {
-		console.log(`Member to remove ${el.member}`);
 			removeMember(el.member);
 		});
 	}

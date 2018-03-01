@@ -62,7 +62,6 @@ contract Core is Destructible {
 		require(memberData.isMember(msg.sender));
 		require(!votingData.hasGivenPermission(_proposedMember));
 		require(!votingData.votingHasEndedFor(_proposedMember));
-		require(votingData.permissionsStillNeededFor(_proposedMember) > 0);
 		votingData.givePermission(_proposedMember);
 	}
 
