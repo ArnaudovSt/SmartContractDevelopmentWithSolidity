@@ -1,14 +1,21 @@
 {
-  "name": "homework",
-  "version": "1.0.0",
-  "description": "",
-  "main": "",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "MIT"
+	"name": "homework",
+	"version": "1.0.0",
+	"description": "",
+	"main": "main.js",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"start": "node main.js"
+	},
+	"author": "Stefan Arnaudov",
+	"license": "MIT",
+	"dependencies": {
+		"node-cron": "^1.2.1",
+		"web3": "^1.0.0-beta.30"
+	},
+	"devDependencies": {
+		"ganache-cli": "^6.1.0-beta.4"
+	}
 }
