@@ -1,51 +1,92 @@
-//this function will be called when the whole page is loaded
-window.onload = function(){
-	if (typeof web3 === 'undefined') {
-		//if there is no web3 variable
-		displayMessage("Error! Are you sure that you are using metamask?");
-	} else {
-		displayMessage("Welcome to our DAPP!");
-		init();
+const script = (() => {
+	window.onload = () => {
+		if (typeof web3 === 'undefined') {
+			//if there is no web3 variable
+			displayMessage("Error! Are you sure that you are using metamask?");
+		} else {
+			displayMessage("Welcome to our DAPP!");
+			init();
+		}
 	}
-}
 
-var contractInstance;
+	const abi = [{ "constant": false, "inputs": [{ "name": "_pokemon", "type": "uint8" }], "name": "announceCatch", "outputs": [{ "name": "success", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "_pokemon", "type": "uint8" }], "name": "listPokemonOwners", "outputs": [{ "name": "", "type": "address[]" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [{ "name": "_owner", "type": "address" }], "name": "listPokemonsOwnedBy", "outputs": [{ "name": "", "type": "uint8[32]" }], "payable": false, "stateMutability": "view", "type": "function" }];
 
-var abi = []; //TODO
+	const address = "0xe3d879b4fcf8510c60e6f5dda8ce52ef3df507db";
 
-var address = ""; //TODO
-var acc;
+	const pokemons = ["Bulbasaur", "Ivysaur", "Venusaur", "Charmander", "Charmeleon", "Charizard", "Squirtle", "Wartortle", "Blastoise", "Caterpie", "Metapod", "Butterfree", "Weedle", "Kakuna", "Beedrill", "Pidgey", "Pidgeotto", "Pidgeot", "Rattata", "Raticate", "Spearow", "Fearow", "Ekans", "Arbok", "Pikachu", "Raichu", "Sandshrew", "Sandslash", "NidoranF", "Nidorina", "Nidoqueen", "NidoranM"];
 
-function init(){
-	var Contract = web3.eth.contract(abi);
-	contractInstance = Contract.at(address);
-	updateAccount();
-}
+	let contractInstance;
+	let acc;
 
-function updateAccount(){
-	//in metamask, the accounts array is of size 1 and only contains the currently selected account. The user can select a different account and so we need to update our account variable
-	acc = web3.eth.accounts[0];
-}
+	const init = () => {
+		const Contract = web3.eth.contract(abi);
+		contractInstance = Contract.at(address);
+		updateAccount();
+	}
 
-function displayMessage(message){
-	var el = document.getElementById("message");
-	el.innerHTML = message;
-}
+	const updateAccount = () => {
+		acc = web3.eth.accounts[0];
+	}
 
-function getTextInput(){
-	var el = document.getElementById("input");
-	
-	return el.value;
-}
+	const displayMessage = (message) => {
+		const el = document.getElementById("message");
+		el.innerText = message;
+	}
 
-function onButtonPressed(){
-	updateAccount();
+	const getTextInput = () => {
+		const el = document.getElementById("input");
 
-	//TODO
-}
+		return el.value;
+	}
 
-function onSecondButtonPressed(){
-	updateAccount();	
+	const claimPokemon = () => {
+		updateAccount();
+		let pokemonIndex = Number(getTextInput());
+		contractInstance.announceCatch(pokemonIndex, { from: acc }, (err, res) => {
+			if (err) {
+				displayMessage(`Could not claim ${pokemons[pokemonIndex]}`);
+				console.error(err);
+			} else {
+				displayMessage(`Successfully claimed ${pokemons[pokemonIndex]}`);
+			}
+		});
+	}
 
-	//TODO
-}
+	const getPokemonsOwnedBy = () => {
+		updateAccount();
+		let ownerAddress = getTextInput();
+		contractInstance.listPokemonsOwnedBy(ownerAddress, (err, res) => {
+			if (err) {
+				displayMessage(`Could not retrieve ${ownerAddress} pokemons`);
+				console.error(err);
+			} else {
+				const result = [];
+				for (let i = 0; i < res.length; i += 1) {
+					if (res[i].valueOf() & 1) {
+						result.push(pokemons[i]);
+					}
+				}
+				displayMessage(`Pokemons owned by ${ownerAddress}: ${result.join(", ")}`);
+			}
+		});
+	}
+
+	const listPokemonOwnersByPokemonIndex = () => {
+		updateAccount();
+		let pokemonIndex = Number(getTextInput());
+		contractInstance.listPokemonOwners(pokemonIndex, (err, res) => {
+			if (err) {
+				displayMessage(`Could not retrieve owners for ${pokemons[pokemonIndex]}`);
+				console.error(err);
+			} else {
+				displayMessage(`${pokemons[pokemonIndex]} owners: ${res.join(", ")}`);
+			}
+		});
+	}
+
+	return {
+		claimPokemon: claimPokemon,
+		getPokemonsOwnedBy: getPokemonsOwnedBy,
+		listPokemonOwnersByPokemonIndex: listPokemonOwnersByPokemonIndex
+	}
+})();
